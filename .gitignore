@@ -1,0 +1,103 @@
+# =============================================================================
+# NGO Admin — .gitignore (security-focused)
+# Production secrets: use includes/config.local.php (never commit that file).
+# =============================================================================
+
+# --- Secrets & local configuration -------------------------------------------
+includes/config.local.php
+.env
+.env.*
+!.env.example
+*.local.php
+!*.local.php.example
+!includes/config.local.php.example
+
+# Credentials / keys (never commit)
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_rsa.*
+id_dsa
+id_ed25519
+.htpasswd
+secrets/
+credentials.json
+service-account*.json
+
+# --- Database (dumps may contain passwords, PII, donor data) -----------------
+database/*
+!database/.gitkeep
+
+# SQL backups anywhere in the project
+*.sql
+*.sql.gz
+*.sql.bz2
+*.sqlite
+*.sqlite3
+
+# Allow a sanitized schema template if you add one later, e.g.:
+# !database/schema.example.sql
+
+# --- User uploads (avatars, banners, documents — PII / org files) ------------
+uploads/**
+!uploads/
+!uploads/.gitkeep
+!uploads/documents/
+!uploads/documents/.gitkeep
+
+# --- Logs, cache, sessions (may leak paths, queries, user data) --------------
+logs/
+log/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+cache/
+tmp/
+temp/
+sessions/
+*.cache
+
+# --- PHP / Composer dependencies ---------------------------------------------
+vendor/
+composer.phar
+
+# --- OS & editor junk ----------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
+*.sublime-project
+*.sublime-workspace
+
+# --- Backup / swap files (often copy real config with secrets) ---------------
+*~
+*.bak
+*.backup
+*.old
+*.orig
+*.swp
+*.swo
+
+# --- Archives (sometimes contain full site + config) ---------------------------
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# --- XAMPP / local server overrides (if created) -----------------------------
+.htaccess.local
+php.ini.local

@@ -1,0 +1,14 @@
+<?php
+/**
+ * Optional local overrides (not required for deployment).
+ * Copy this file to config.local.php (gitignored). Put production DB credentials there only.
+ */
+
+// Uncomment only if auto-detection fails on your server:
+// define('BASE_URL_OVERRIDE', '/ngo-admin');
+
+// Database overrides for production (optional):
+// define('DB_HOST', 'localhost');
+// define('DB_NAME', 'ngo_admin');
+// define('DB_USER', 'your_user');
+// define('DB_PASS', 'your_password');
