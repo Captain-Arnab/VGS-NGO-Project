@@ -4,12 +4,12 @@
 function report_kpi(string $label, string $value, string $icon, string $variant = 'green'): void
 {
     $variants = [
-        'green' => ['bg' => 'rgba(47,165,138,0.16)', 'color' => '#2FA58A'],
-        'blue' => ['bg' => 'rgba(74,143,212,0.16)', 'color' => '#4A8FD4'],
-        'purple' => ['bg' => 'rgba(123,107,200,0.16)', 'color' => '#7B6BC8'],
-        'amber' => ['bg' => 'rgba(224,154,62,0.16)', 'color' => '#E09A3E'],
+        'green' => ['bg' => 'rgba(19,136,8,0.14)', 'color' => '#138808'],
+        'blue' => ['bg' => 'rgba(0,33,71,0.10)', 'color' => '#002147'],
+        'purple' => ['bg' => 'rgba(245,130,32,0.14)', 'color' => '#F58220'],
+        'amber' => ['bg' => 'rgba(245,130,32,0.16)', 'color' => '#F58220'],
         'slate' => ['bg' => 'rgba(94,113,133,0.14)', 'color' => '#5E7185'],
-        'pink' => ['bg' => 'rgba(212,104,154,0.16)', 'color' => '#D4689A'],
+        'pink' => ['bg' => 'rgba(0,33,71,0.12)', 'color' => '#002147'],
     ];
     $v = $variants[$variant] ?? $variants['green'];
     ?>

@@ -4,6 +4,8 @@ require_once __DIR__ . '/includes/config.php';
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/helpers.php';
 require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/includes/site_settings.php';
+site_settings_load($pdo);
 
 if (!empty($_SESSION['admin_id'])) {
     header('Location: ' . base_url('index.php'));
@@ -54,9 +56,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="login-wrap">
     <div class="login-card card-shadow animate-fade-in">
         <div class="login-brand text-center mb-4">
-            <div class="brand-icon mx-auto mb-3"><i class="fas fa-hands-holding-heart"></i></div>
-            <h1 class="login-title">NGO Admin</h1>
-            <p class="text-muted mb-0">Sign in to manage your impact dashboard</p>
+            <img src="<?= e(org_logo_url()) ?>" alt="<?= e(get_setting('org_name', ORG_NAME)) ?>" class="login-logo mb-3">
+            <h1 class="login-title"><?= e(get_setting('org_short_name', 'Bharati Admin')) ?></h1>
+            <p class="text-muted mb-0"><?= e(get_setting('org_tagline', ORG_TAGLINE)) ?></p>
         </div>
         <form method="post" class="js-prevent-double" id="loginForm">
             <div class="mb-3">
@@ -88,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script src="<?= base_url('assets/js/main.js') ?>"></script>
 <?php if ($error): ?>
 <script>
-Swal.fire({ icon: 'error', title: 'Login failed', text: <?= json_encode($error) ?>, confirmButtonColor: '#2FA58A' });
+Swal.fire({ icon: 'error', title: 'Login failed', text: <?= json_encode($error) ?>, confirmButtonColor: '#F58220' });
 </script>
 <?php endif; ?>
 <script>

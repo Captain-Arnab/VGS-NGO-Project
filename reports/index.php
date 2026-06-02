@@ -161,6 +161,7 @@ try {
 }
 
 $exportQs = http_build_query(['tab' => $tab, 'date_from' => $dateFrom, 'date_to' => $dateTo, 'export' => 'csv']);
+$exportBaseQs = http_build_query(['tab' => $tab, 'date_from' => $dateFrom, 'date_to' => $dateTo]);
 $dateRangeLabel = format_date($dateFrom) . ' – ' . format_date($dateTo);
 
 $reportsChartConfigs = [];
@@ -181,7 +182,11 @@ $reportsChartConfigs = [];
             <p class="text-muted mb-0">Analytics and exportable reports.</p>
             <small class="text-muted"><i class="far fa-calendar-alt me-1"></i><?= e($dateRangeLabel) ?></small>
         </div>
-        <a href="?<?= e($exportQs) ?>" class="btn btn-light btn-export"><i class="fas fa-file-csv me-2"></i>Export CSV</a>
+        <div class="btn-group">
+            <a href="?<?= e($exportQs) ?>" class="btn btn-light btn-export"><i class="fas fa-file-csv me-1"></i> CSV</a>
+            <a href="<?= base_url('reports/export.php?' . $exportBaseQs . '&format=pdf') ?>" class="btn btn-light btn-export"><i class="fas fa-file-pdf me-1"></i> PDF</a>
+            <a href="<?= base_url('reports/export.php?' . $exportBaseQs . '&format=docx') ?>" class="btn btn-light btn-export"><i class="fas fa-file-word me-1"></i> DOCX</a>
+        </div>
     </div>
 
     <div class="card card-shadow report-filter-card mb-4">

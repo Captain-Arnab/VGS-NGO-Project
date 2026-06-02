@@ -1,13 +1,15 @@
 <?php
 $isDashboard = basename(current_page()) === 'index.php'
-    && !preg_match('#/(donors|donations|volunteers|campaigns|events|beneficiaries|reports|documents|blogs)/#', current_page());
+    && !preg_match('#/(donors|donations|volunteers|campaigns|events|beneficiaries|reports|documents|blogs|case_studies|media)/#', current_page());
 ?>
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-        <div class="brand-icon"><i class="fas fa-hands-holding-heart"></i></div>
+        <div class="brand-logo-wrap">
+            <img src="<?= e(org_logo_url()) ?>" alt="<?= e(get_setting('org_name')) ?>" class="brand-logo-img">
+        </div>
         <div class="brand-text">
-            <span class="brand-name">NGO Admin</span>
-            <span class="brand-tagline">Impact Dashboard</span>
+            <span class="brand-name"><?= e(get_setting('org_short_name', 'Bharati Admin')) ?></span>
+            <span class="brand-tagline"><?= e(get_setting('org_tagline', ORG_TAGLINE)) ?></span>
         </div>
     </div>
     <nav class="sidebar-nav">
@@ -49,7 +51,18 @@ $isDashboard = basename(current_page()) === 'index.php'
                     <i class="fas fa-calendar-days"></i><span>Events</span>
                 </a>
             </li>
+            <li class="nav-section">Impact</li>
+            <li class="nav-item">
+                <a class="nav-link<?= nav_active('case_studies') ?>" href="<?= base_url('case_studies/index.php') ?>" data-title="Case Studies">
+                    <i class="fas fa-book-open"></i><span>Case Studies</span>
+                </a>
+            </li>
             <li class="nav-section">Content</li>
+            <li class="nav-item">
+                <a class="nav-link<?= nav_active('media') ?>" href="<?= base_url('media/index.php') ?>" data-title="Media Gallery">
+                    <i class="fas fa-images"></i><span>Media Gallery</span>
+                </a>
+            </li>
             <li class="nav-item">
                 <a class="nav-link<?= nav_active('blogs') ?>" href="<?= base_url('blogs/index.php') ?>" data-title="Blog">
                     <i class="fas fa-blog"></i><span>Blog</span>
@@ -66,10 +79,15 @@ $isDashboard = basename(current_page()) === 'index.php'
                     <i class="fas fa-chart-line"></i><span>Reports</span>
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link<?= basename(current_page()) === 'settings.php' ? ' active' : '' ?>" href="<?= base_url('settings.php') ?>" data-title="Settings">
+                    <i class="fas fa-gear"></i><span>Settings</span>
+                </a>
+            </li>
         </ul>
     </nav>
     <div class="sidebar-footer">
-        <small>© <?= date('Y') ?> NGO Admin</small>
+        <small>© <?= date('Y') ?> <?= e(get_setting('org_name', ORG_NAME)) ?></small>
     </div>
 </aside>
 <div class="sidebar-overlay" id="sidebarOverlay"></div>

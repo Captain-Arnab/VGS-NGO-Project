@@ -8,6 +8,14 @@ define('BASE_PATH', dirname(__DIR__));
 define('UPLOAD_PATH', BASE_PATH . '/uploads');
 define('PER_PAGE', 15);
 define('MAX_UPLOAD_SIZE', 10 * 1024 * 1024);
+define('MEDIA_MAX_UPLOAD_SIZE', 5 * 1024 * 1024);
+
+define('INVOICE_PREFIX', 'INV');
+define('ORG_NAME', 'Bharati Foundation');
+define('ORG_TAGLINE', 'Empowering Lives. Enriching Futures.');
+define('ORG_EMAIL', 'contact@bharatifoundation.org');
+define('ORG_PHONE', '+91 98765 43210');
+define('ORG_ADDRESS', 'Mumbai, Maharashtra, India');
 
 /**
  * Web path to the admin app root (no trailing slash).
@@ -47,6 +55,8 @@ if (!function_exists('detect_base_url')) {
             '/reports',
             '/documents',
             '/blogs',
+            '/case_studies',
+            '/media',
         ];
         foreach ($strip as $suffix) {
             if (str_ends_with($dir, $suffix)) {

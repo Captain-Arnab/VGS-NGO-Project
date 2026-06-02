@@ -65,6 +65,7 @@ $extraHead = $extraHead ?? '';
                         </li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="<?= base_url('profile.php') ?>"><i class="fas fa-user-pen me-2 text-success"></i> My Profile</a></li>
+                        <li><a class="dropdown-item" href="<?= base_url('settings.php') ?>"><i class="fas fa-building me-2 text-success"></i> Organization Settings</a></li>
                         <li><a class="dropdown-item text-danger" href="#" id="logoutLink"><i class="fas fa-right-from-bracket me-2"></i> Logout</a></li>
                     </ul>
                 </div>

@@ -120,7 +120,9 @@ $fields = [
                 <td><?= format_date($row['donation_date']) ?></td>
                 <td><?= e($row['purpose'] ?? '—') ?></td>
                 <td>
-                    <a href="<?= base_url('donations/create.php?id=' . $row['id']) ?>" class="btn btn-sm btn-light"><i class="fas fa-pen"></i></a>
+                    <a href="<?= base_url('donations/view.php?id=' . $row['id']) ?>" class="btn btn-sm btn-light" title="View"><i class="fas fa-eye"></i></a>
+                    <a href="<?= base_url('donations/invoice.php?id=' . $row['id']) ?>" class="btn btn-sm btn-light" title="Invoice" target="_blank"><i class="fas fa-file-invoice"></i></a>
+                    <a href="<?= base_url('donations/create.php?id=' . $row['id']) ?>" class="btn btn-sm btn-light" title="Edit"><i class="fas fa-pen"></i></a>
                     <a href="#" class="btn btn-sm btn-light text-danger" data-delete-url="<?= base_url('donations/index.php?delete=' . $row['id']) ?>"><i class="fas fa-trash"></i></a>
                 </td>
             </tr>

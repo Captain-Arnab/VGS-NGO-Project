@@ -15,3 +15,6 @@ try {
 } catch (PDOException $e) {
     die('Database connection failed. Import database/ngo_admin.sql and check includes/config.php or config.local.php.');
 }
+
+require_once __DIR__ . '/site_settings.php';
+site_settings_load($pdo);

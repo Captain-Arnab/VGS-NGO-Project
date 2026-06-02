@@ -2,7 +2,7 @@
   'use strict';
 
   const SWAL_DEFAULTS = {
-    confirmButtonColor: '#2FA58A',
+    confirmButtonColor: '#F58220',
     cancelButtonColor: '#6B7280',
     customClass: {
       confirmButton: 'btn btn-accent px-4',
@@ -254,8 +254,8 @@
     }
   }
 
-  const REPORT_CHART_PALETTE = ['#2FA58A', '#4A8FD4', '#E09A3E', '#7B6BC8', '#D4689A', '#3BAFA8', '#5E7185'];
-  const REPORT_BAR_COLORS = ['#2FA58A', '#4A8FD4', '#7B6BC8'];
+  const REPORT_CHART_PALETTE = ['#138808', '#F58220', '#002147', '#4A8FD4', '#7B6BC8', '#5E7185'];
+  const REPORT_BAR_COLORS = ['#138808', '#F58220', '#002147'];
 
   window.initReportsCharts = function () {
     const configs = window.__reportsChartConfigs;
@@ -286,13 +286,13 @@
             datasets: [{
               label: 'Amount',
               data: data,
-              borderColor: '#2FA58A',
-              backgroundColor: 'rgba(47,165,138,0.15)',
+              borderColor: '#138808',
+              backgroundColor: 'rgba(19,136,8,0.16)',
               fill: true,
               tension: 0.35,
               borderWidth: 2,
               pointRadius: 4,
-              pointBackgroundColor: '#2FA58A'
+              pointBackgroundColor: '#138808'
             }]
           },
           options: Object.assign({}, baseOpts, {
@@ -382,8 +382,8 @@
           datasets: [{
             label: 'Donations',
             data: d.line.values || [],
-            borderColor: '#2FA58A',
-            backgroundColor: 'rgba(47,165,138,0.15)',
+            borderColor: '#138808',
+            backgroundColor: 'rgba(19,136,8,0.16)',
             fill: true,
             tension: 0.35,
             pointRadius: 4
@@ -410,7 +410,7 @@
             {
               label: 'Raised',
               data: d.bar.raised || [],
-              backgroundColor: '#2FA58A',
+              backgroundColor: '#F58220',
               borderRadius: 6,
               maxBarThickness: 48
             },

@@ -64,11 +64,11 @@ if (empty($chartLabels)) {
     <?php
     $cards = [
         ['icon' => 'fa-hand-holding-heart', 'color' => '#4A8FD4', 'label' => 'Total Donors', 'value' => $stats['donors'], 'prefix' => '', 'currency' => false, 'href' => 'donors/index.php'],
-        ['icon' => 'fa-indian-rupee-sign', 'color' => '#2FA58A', 'label' => 'Total Donations', 'value' => $stats['donations'], 'prefix' => '₹', 'currency' => true, 'href' => 'donations/index.php'],
+        ['icon' => 'fa-indian-rupee-sign', 'color' => '#F58220', 'label' => 'Total Donations', 'value' => $stats['donations'], 'prefix' => '₹', 'currency' => true, 'href' => 'donations/index.php'],
         ['icon' => 'fa-people-group', 'color' => '#7B6BC8', 'label' => 'Active Volunteers', 'value' => $stats['volunteers'], 'prefix' => '', 'currency' => false, 'href' => 'volunteers/index.php?status=Active'],
         ['icon' => 'fa-bullhorn', 'color' => '#E09A3E', 'label' => 'Active Campaigns', 'value' => $stats['campaigns'], 'prefix' => '', 'currency' => false, 'href' => 'campaigns/index.php?status=Active'],
-        ['icon' => 'fa-calendar-days', 'color' => '#D4689A', 'label' => 'Upcoming Events', 'value' => $stats['events'], 'prefix' => '', 'currency' => false, 'href' => 'events/index.php?status=Upcoming'],
-        ['icon' => 'fa-user-injured', 'color' => '#3BAFA8', 'label' => 'Beneficiaries', 'value' => $stats['beneficiaries'], 'prefix' => '', 'currency' => false, 'href' => 'beneficiaries/index.php'],
+        ['icon' => 'fa-calendar-days', 'color' => '#002147', 'label' => 'Upcoming Events', 'value' => $stats['events'], 'prefix' => '', 'currency' => false, 'href' => 'events/index.php?status=Upcoming'],
+        ['icon' => 'fa-user-injured', 'color' => '#138808', 'label' => 'Beneficiaries', 'value' => $stats['beneficiaries'], 'prefix' => '', 'currency' => false, 'href' => 'beneficiaries/index.php'],
     ];
     foreach ($cards as $c): ?>
     <div class="col-6 col-md-4 col-xl-2">

@@ -1,0 +1,11 @@
+{
+    "name": "ngo/admin-panel",
+    "description": "Optional libraries for PDF report export",
+    "require": {
+        "php": ">=8.0",
+        "dompdf/dompdf": "^2.0"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

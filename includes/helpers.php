@@ -79,6 +79,12 @@ function format_currency(float $amount): string
     return '₹' . number_format($amount, 2);
 }
 
+/** PDF-safe currency (DejaVu Sans supports U+20B9 when UTF-8) */
+function format_currency_pdf(float $amount): string
+{
+    return '₹' . number_format($amount, 2);
+}
+
 function format_date(?string $date, string $format = 'd M Y'): string
 {
     if (!$date) {
@@ -142,7 +148,7 @@ function render_pagination(int $total, int $page, array $queryParams = []): void
     echo '</ul></nav>';
 }
 
-function upload_file(array $file, string $module, array $allowedExtensions): ?string
+function upload_file(array $file, string $module, array $allowedExtensions, ?int $maxSize = null): ?string
 {
     if ($file['error'] === UPLOAD_ERR_NO_FILE) {
         return null;
@@ -150,8 +156,10 @@ function upload_file(array $file, string $module, array $allowedExtensions): ?st
     if ($file['error'] !== UPLOAD_ERR_OK) {
         throw new RuntimeException('Upload failed.');
     }
-    if ($file['size'] > MAX_UPLOAD_SIZE) {
-        throw new RuntimeException('File exceeds 10MB limit.');
+    $limit = $maxSize ?? MAX_UPLOAD_SIZE;
+    $limitMb = round($limit / 1048576, 1);
+    if ($file['size'] > $limit) {
+        throw new RuntimeException('File exceeds ' . $limitMb . 'MB limit.');
     }
     $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
     if (!in_array($ext, $allowedExtensions, true)) {

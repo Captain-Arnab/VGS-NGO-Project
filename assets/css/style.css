@@ -1,27 +1,30 @@
 :root {
-  /* Balanced serene — soothing + clear contrast + attractive accents */
-  --sidebar-bg: #1E2D3A;
-  --sidebar-text: #A8B8C4;
-  --sidebar-active-bg: rgba(47, 165, 138, 0.2);
-  --sidebar-active-text: #5EECC8;
-  --accent: #2FA58A;
-  --accent-hover: #268A74;
-  --accent-soft: rgba(47, 165, 138, 0.14);
-  --accent-light: #5EC4A8;
-  --accent-muted: #3D9B82;
-  --page-bg: #E8EEF2;
+  /* Bharati Foundation — navy, saffron, green */
+  --sidebar-bg: #002147;
+  --sidebar-text: #B8C5D4;
+  --sidebar-active-bg: rgba(245, 130, 32, 0.22);
+  --sidebar-active-text: #FFB366;
+  --accent: #F58220;
+  --accent-hover: #E07010;
+  --accent-soft: rgba(245, 130, 32, 0.14);
+  --accent-light: #FFB366;
+  --accent-muted: #138808;
+  --brand-navy: #002147;
+  --brand-saffron: #F58220;
+  --brand-green: #138808;
+  --page-bg: #F0F2F7;
   --card-bg: #FFFFFF;
-  --card-shadow: 0 2px 16px rgba(30, 45, 58, 0.09);
-  --text-primary: #1F2A33;
-  --text-muted: #5E7185;
+  --card-shadow: 0 2px 16px rgba(0, 33, 71, 0.08);
+  --text-primary: #002147;
+  --text-muted: #5A6B7D;
   --border: #D5DEE6;
-  --danger: #D45656;
-  --warning: #D4924A;
-  --info: #4A8FD4;
-  --success: #2FA58A;
-  --hero-bg: linear-gradient(135deg, #1E2D3A 0%, #2A4555 48%, #1A5C4E 100%);
-  --chart-primary: #2FA58A;
-  --chart-secondary: #B8C5D0;
+  --danger: #C62828;
+  --warning: #F58220;
+  --info: #1565C0;
+  --success: #138808;
+  --hero-bg: linear-gradient(135deg, #002147 0%, #003366 45%, #138808 100%);
+  --chart-primary: #138808;
+  --chart-secondary: #F58220;
   --radius: 14px;
   --sidebar-width: 260px;
   --sidebar-collapsed: 72px;
@@ -70,21 +73,28 @@ h1, h2, h3, h4, h5, h6, .page-heading, .brand-name {
   border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 
-.brand-icon {
-  width: 42px; height: 42px;
-  background: var(--sidebar-active-bg);
-  color: var(--accent);
+.brand-logo-wrap {
+  width: 46px; height: 46px;
+  background: #fff;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
+  padding: 4px;
   flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(0,33,71,0.08);
+}
+
+.brand-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
 }
 
 .brand-text { display: flex; flex-direction: column; white-space: nowrap; }
-.brand-name { color: #F4F7FA; font-weight: 700; font-size: 1rem; line-height: 1.2; }
-.brand-tagline { font-size: 0.7rem; opacity: 0.6; }
+.brand-name { color: #F4F7FA; font-weight: 700; font-size: 0.94rem; line-height: 1.2; }
+.brand-tagline { font-size: 0.64rem; opacity: 0.7; max-width: 165px; overflow: hidden; text-overflow: ellipsis; }
 
 .sidebar-nav {
   flex: 1;
@@ -994,16 +1004,22 @@ h1, h2, h3, h4, h5, h6, .page-heading, .brand-name {
   font-size: 1.5rem;
 }
 
-.login-card .brand-icon {
-  width: 56px;
-  height: 56px;
-  background: var(--accent-soft);
-  color: var(--accent);
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
+.login-logo {
+  max-width: 220px;
+  max-height: 90px;
+  width: auto;
+  object-fit: contain;
+}
+
+.settings-logo-preview {
+  max-width: 240px;
+  max-height: 140px;
+  width: auto;
+  object-fit: contain;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--border);
+  padding: 8px;
 }
 
 .login-hint code {
@@ -1080,4 +1096,308 @@ h1, h2, h3, h4, h5, h6, .page-heading, .brand-name {
 /* SweetAlert2 button alignment */
 .swal2-actions {
   gap: 0.5rem;
+}
+
+/* Case studies — roadmap timeline */
+.case-meta-list dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 0.75rem;
+}
+.case-meta-list dd {
+  margin: 0;
+  font-weight: 600;
+}
+.case-study-featured {
+  max-height: 200px;
+  object-fit: cover;
+}
+.case-timeline {
+  position: relative;
+  padding-left: 0;
+}
+.case-timeline-item {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  position: relative;
+}
+.case-timeline-item:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 17px;
+  top: 36px;
+  bottom: -12px;
+  width: 2px;
+  background: var(--border);
+}
+.case-timeline-marker {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+.case-timeline-content {
+  flex: 1;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--border);
+}
+.card-shadow-sm {
+  box-shadow: var(--card-shadow);
+}
+.case-timeline-date {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* Media gallery */
+.media-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+.media-gallery-item {
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--card-bg);
+}
+.media-gallery-preview {
+  aspect-ratio: 16/10;
+  background: #eef2f6;
+  overflow: hidden;
+}
+.media-gallery-preview img,
+.media-gallery-preview video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.media-gallery-preview video {
+  object-fit: contain;
+  background: #1e2d3a;
+}
+.badge-website {
+  background: rgba(47, 165, 138, 0.15);
+  color: var(--accent);
+  font-size: 0.7rem;
+}
+
+/* Certificate designer */
+.cert-editor-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 400px) 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+@media (max-width: 991px) {
+  .cert-editor-layout {
+    grid-template-columns: 1fr;
+  }
+}
+.cert-editor-panel .form-label {
+  margin-bottom: 0.2rem;
+  color: var(--text-muted);
+}
+.cert-preview-scroll {
+  overflow: auto;
+  background: #e8ecf2;
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+.cert-preview-scale {
+  transform-origin: top center;
+  padding: 0.5rem 0 1rem;
+}
+.cert-preview-scale .certificate {
+  margin: 0 auto;
+  box-shadow: 0 8px 32px rgba(0, 33, 71, 0.12);
+  max-width: 100%;
+}
+@media (max-width: 991px) {
+  .cert-preview-scale .certificate {
+    transform: scale(0.55);
+    transform-origin: top center;
+    margin-bottom: -80px;
+  }
+}
+@media (min-width: 992px) and (max-width: 1199px) {
+  .cert-preview-scale .certificate {
+    transform: scale(0.72);
+    transform-origin: top center;
+    margin-bottom: -40px;
+  }
+}
+.certificate {
+  width: 297mm;
+  min-height: 210mm;
+  max-width: none;
+  margin: 0 auto;
+  box-sizing: border-box;
+  background: #fff;
+  padding: 18mm 22mm;
+  position: relative;
+  text-align: center;
+  font-family: Georgia, "Times New Roman", serif;
+  color: var(--brand-navy);
+  border: 8px double var(--brand-navy);
+  outline: 2px solid var(--brand-saffron);
+  outline-offset: -14px;
+}
+.cert-border-inner {
+  border: 1px solid var(--brand-green);
+  padding: 12mm 10mm;
+  min-height: calc(210mm - 36mm - 24px);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.cert-logo { max-height: 72px; max-width: 200px; margin-bottom: 8px; }
+.cert-org {
+  font-size: 14px;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  margin: 0;
+  text-transform: uppercase;
+}
+.cert-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--brand-navy);
+  margin: 16px 0 8px;
+  letter-spacing: 0.08em;
+}
+.cert-saffron-line {
+  width: 120px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--brand-saffron), var(--brand-green));
+  margin: 0 auto 20px;
+}
+.cert-intro { font-size: 16px; margin-bottom: 8px; }
+.cert-name {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--brand-saffron);
+  margin: 12px 0 20px;
+  font-style: italic;
+}
+.cert-body {
+  font-size: 15px;
+  line-height: 1.7;
+  max-width: 85%;
+  margin: 0 auto 24px;
+  color: #1a3a5c;
+}
+.cert-footer {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: 16px;
+}
+.cert-sign { margin-top: 28px; }
+.cert-sign-visual { margin: 0 auto 8px; text-align: center; }
+.cert-sign-visual--line-only .cert-sign-divider {
+  margin-top: 40px;
+}
+.cert-sign-divider.line {
+  width: 200px;
+  border-top: 2px solid var(--brand-navy);
+  margin: 6px auto 10px;
+}
+.cert-signature-img {
+  max-height: 64px;
+  max-width: 220px;
+  display: block;
+  margin: 0 auto 4px;
+  object-fit: contain;
+}
+.cert-signature-typed {
+  font-family: "Brush Script MT", "Segoe Script", "Lucida Handwriting", cursive;
+  font-size: 28px;
+  color: var(--brand-navy);
+  margin: 0 0 4px;
+  line-height: 1.2;
+}
+.cert-sign strong { display: block; font-size: 14px; }
+.cert-sign span { font-size: 12px; color: var(--text-muted); }
+.cert-corner {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--brand-green);
+}
+.cert-corner.tl {
+  top: 22px;
+  left: 22px;
+  border-right: none;
+  border-bottom: none;
+}
+.cert-corner.br {
+  bottom: 22px;
+  right: 22px;
+  border-left: none;
+  border-top: none;
+}
+.cert-actions .btn-accent {
+  font-weight: 600;
+}
+.cert-signature-section {
+  border-top: 1px dashed var(--border);
+  padding-top: 0.75rem;
+  margin-top: 0.25rem;
+}
+.cert-sig-type-toggle .btn {
+  font-size: 0.75rem;
+}
+.cert-signature-pad-wrap {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px;
+  max-width: 100%;
+}
+#signature-canvas {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  height: 120px;
+  cursor: crosshair;
+  touch-action: none;
+  border-radius: 4px;
+  background: #fafbfc;
+}
+.cert-sig-upload-preview {
+  margin-top: 0.5rem;
+}
+.cert-sig-upload-preview img {
+  max-height: 56px;
+  max-width: 200px;
+  display: block;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px;
+  background: #fff;
+}
+@media print {
+  .sidebar, .topbar, .cert-page-header, .cert-editor-panel, .cert-preview-column .card-header {
+    display: none !important;
+  }
+  .cert-editor-layout { display: block; }
+  .cert-preview-scale .certificate {
+    transform: none !important;
+    margin: 0 !important;
+  }
 }

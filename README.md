@@ -13,7 +13,10 @@ A self-hosted admin dashboard for NGO operations: donors, donations, volunteers,
 | **Volunteers** | Registration, status, skills |
 | **Campaigns & events** | Goals, raised amounts, schedules, linked beneficiaries |
 | **Beneficiaries** | Aid categories, campaign/event links, document uploads |
-| **Reports** | Charts and CSV export |
+| **Reports** | Charts, CSV, PDF & DOCX export |
+| **Case studies** | Impact stories with roadmap timeline, active/inactive, reopen |
+| **Media gallery** | Images/videos (max 5 MB) for public website |
+| **Donation invoices** | Auto-generated invoice on save; print/PDF from detail |
 | **Documents & blog** | File uploads (PDF/images), rich text (Quill) |
 | **Admin** | Login, session auth, profile (name, email, avatar, password), SweetAlert feedback |
 | **UI** | Bootstrap 5.3, responsive sidebar (desktop / tablet / mobile drawer) |
@@ -67,6 +70,16 @@ mysql -u root -p < database/ngo_admin.sql
 ```
 
 This creates the `ngo_admin` database, all tables, a default admin user, and sample records (donors, donations, campaigns, etc.).
+
+**New features (after initial import):** run the migration once:
+
+```powershell
+C:\xampp\mysql\bin\mysql.exe -u root -p ngo_admin < database\migration_2026_features.sql
+```
+
+This adds case studies, media gallery, and donation invoice numbers.
+
+**Optional — true PDF reports:** from the `admin` folder run `composer install` (requires [Composer](https://getcomposer.org/)). Without it, PDF export opens a print-friendly page; DOCX export works without Composer.
 
 > **Note:** `database/*.sql` files are **not committed to Git** (they may contain PII and password hashes). Keep `ngo_admin.sql` on your machine or share it securely with your team — do not publish it in a public repository.
 
@@ -154,6 +167,8 @@ define('DB_PASS', 'strong_random_password_here');
 |----------|---------|
 | `PER_PAGE` | List pagination (default `15`) |
 | `MAX_UPLOAD_SIZE` | Upload limit in bytes (default `10 MB`) |
+| `MEDIA_MAX_UPLOAD_SIZE` | Media gallery limit (default `5 MB`) |
+| `ORG_NAME`, `ORG_ADDRESS`, … | Shown on donation invoices |
 
 ---
 
@@ -170,7 +185,9 @@ admin/
 ├── campaigns/
 ├── events/
 ├── beneficiaries/
-├── reports/                  # Charts + CSV export
+├── reports/                  # Charts + CSV / PDF / DOCX export
+├── case_studies/             # Impact stories + roadmap
+├── media/                    # Website media gallery
 ├── documents/
 ├── blogs/
 ├── includes/

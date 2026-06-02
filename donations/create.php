@@ -1,6 +1,7 @@
 <?php
 $pageTitle = 'Add Donation';
 require_once dirname(__DIR__) . '/includes/header.php';
+require_once dirname(__DIR__) . '/includes/invoice_helpers.php';
 
 $id = get_int('id');
 $donation = null;
@@ -55,9 +56,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($id) {
             $pdo->prepare('UPDATE donations SET donor_id=?, campaign_id=?, amount=?, donation_date=?, payment_mode=?, reference_number=?, purpose=?, notes=? WHERE id=?')
                 ->execute([$donor_id, $campaign_id, $amount, $donation_date, $payment_mode, $reference_number ?: null, $purpose ?: null, $notes ?: null, $id]);
+            assign_donation_invoice($pdo, $id);
+            $newId = $id;
         } else {
             $pdo->prepare('INSERT INTO donations (donor_id, campaign_id, amount, donation_date, payment_mode, reference_number, purpose, notes) VALUES (?,?,?,?,?,?,?,?)')
                 ->execute([$donor_id, $campaign_id, $amount, $donation_date, $payment_mode, $reference_number ?: null, $purpose ?: null, $notes ?: null]);
+            $newId = (int) $pdo->lastInsertId();
+            assign_donation_invoice($pdo, $newId);
         }
 
         if ($oldCampaign) {
@@ -76,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        redirect('donations/index.php', $id ? 'Donation updated.' : 'Donation recorded.');
+        redirect('donations/view.php?id=' . $newId, $id ? 'Donation updated.' : 'Donation recorded. Invoice generated.');
     }
     stash_form_errors($errors);
     $donation = $_POST;
