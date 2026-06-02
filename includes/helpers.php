@@ -202,9 +202,15 @@ function post_string(string $key, int $maxLen = 255): string
 
 function export_csv(string $filename, array $headers, array $rows): void
 {
-    header('Content-Type: text/csv; charset=utf-8');
+    if (ob_get_level()) {
+        ob_end_clean();
+    }
+    header('Content-Type: text/csv; charset=UTF-8');
     header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Cache-Control: max-age=0, no-cache, must-revalidate');
+    header('Pragma: public');
     $out = fopen('php://output', 'w');
+    fprintf($out, "\xEF\xBB\xBF");
     fputcsv($out, $headers);
     foreach ($rows as $row) {
         fputcsv($out, $row);

@@ -646,6 +646,92 @@ h1, h2, h3, h4, h5, h6, .page-heading, .brand-name {
 }
 
 /* ========== Reports section ========== */
+.reports-page {
+  scroll-behavior: smooth;
+}
+
+.report-kpi.report-card-clickable {
+  display: flex;
+  text-decoration: none;
+  color: inherit;
+}
+
+.report-card-clickable {
+  cursor: pointer;
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+}
+
+.report-card-clickable:hover {
+  color: inherit;
+}
+
+.report-card-clickable .report-card-hint {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.75rem;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.report-card-clickable:hover .report-card-hint {
+  opacity: 1;
+}
+
+a.report-card-clickable.report-hero-link {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  min-height: 100%;
+  text-decoration: none;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+a.report-card-clickable.report-hero-link:hover {
+  color: #fff;
+}
+
+.report-hero-total.report-card-clickable .report-hero-label,
+.report-hero-total.report-card-clickable .report-hero-amount,
+.report-hero-total.report-card-clickable .report-hero-meta {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 100%;
+}
+
+.report-hero-total.report-card-clickable .report-hero-icon {
+  z-index: 0;
+  pointer-events: none;
+}
+
+.report-hero-total.report-card-clickable .report-card-hint {
+  z-index: 3;
+  color: rgba(255, 255, 255, 0.85);
+  top: 0.85rem;
+  right: 0.9rem;
+}
+
+.report-chart-panel.report-card-clickable {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+
+.report-chart-panel.report-card-clickable .report-chart-wrap {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 220px;
+}
+
 .reports-page .report-filter-card {
   border: 1px solid var(--border);
   background: linear-gradient(135deg, #fff 0%, #EEF2F6 100%);

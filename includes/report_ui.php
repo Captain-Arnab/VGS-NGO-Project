@@ -1,7 +1,7 @@
 <?php
 /** Report UI partials */
 
-function report_kpi(string $label, string $value, string $icon, string $variant = 'green'): void
+function report_kpi(string $label, string $value, string $icon, string $variant = 'green', ?string $anchor = null): void
 {
     $variants = [
         'green' => ['bg' => 'rgba(19,136,8,0.14)', 'color' => '#138808'],
@@ -12,8 +12,12 @@ function report_kpi(string $label, string $value, string $icon, string $variant 
         'pink' => ['bg' => 'rgba(0,33,71,0.12)', 'color' => '#002147'],
     ];
     $v = $variants[$variant] ?? $variants['green'];
+    $tag = $anchor ? 'a' : 'div';
+    $attrs = $anchor
+        ? ' href="' . e($anchor) . '" class="report-kpi card-shadow report-card-clickable"'
+        : ' class="report-kpi card-shadow"';
     ?>
-    <div class="report-kpi card-shadow">
+    <<?= $tag ?><?= $attrs ?>>
         <div class="report-kpi-icon" style="background:<?= $v['bg'] ?>;color:<?= $v['color'] ?>">
             <i class="fas <?= e($icon) ?>"></i>
         </div>
@@ -21,7 +25,8 @@ function report_kpi(string $label, string $value, string $icon, string $variant 
             <span class="report-kpi-value"><?= $value ?></span>
             <span class="report-kpi-label"><?= e($label) ?></span>
         </div>
-    </div>
+        <?php if ($anchor): ?><span class="report-card-hint"><i class="fas fa-arrow-down"></i></span><?php endif; ?>
+    </<?= $tag ?>>
     <?php
 }
 

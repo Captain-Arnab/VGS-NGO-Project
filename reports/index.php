@@ -1,55 +1,23 @@
 <?php
-$pageTitle = 'Reports';
-require_once dirname(__DIR__) . '/includes/header.php';
-require_once dirname(__DIR__) . '/includes/report_ui.php';
+require_once dirname(__DIR__) . '/includes/config.php';
+require_once dirname(__DIR__) . '/includes/db.php';
+require_once dirname(__DIR__) . '/includes/helpers.php';
+require_once dirname(__DIR__) . '/includes/auth.php';
+require_once dirname(__DIR__) . '/includes/report_exporter.php';
+
+require_login();
 
 $tab = $_GET['tab'] ?? 'donations';
 $dateFrom = $_GET['date_from'] ?? date('Y-m-01', strtotime('-6 months'));
 $dateTo = $_GET['date_to'] ?? date('Y-m-d');
 
 if (isset($_GET['export']) && $_GET['export'] === 'csv') {
-    $tab = $_GET['tab'] ?? 'donations';
-    if ($tab === 'donations') {
-        $rows = $pdo->prepare("
-            SELECT d.donation_date, dn.name, dn.donor_type, c.title, d.amount, d.payment_mode
-            FROM donations d
-            JOIN donors dn ON dn.id = d.donor_id
-            LEFT JOIN campaigns c ON c.id = d.campaign_id
-            WHERE d.donation_date BETWEEN ? AND ?
-            ORDER BY d.donation_date DESC
-        ");
-        $rows->execute([$dateFrom, $dateTo]);
-        $data = [];
-        foreach ($rows->fetchAll() as $r) {
-            $data[] = [$r['donation_date'], $r['name'], $r['donor_type'], $r['title'] ?? '', $r['amount'], $r['payment_mode']];
-        }
-        export_csv('donation-report.csv', ['Date', 'Donor', 'Type', 'Campaign', 'Amount', 'Payment Mode'], $data);
-    }
-    if ($tab === 'volunteers') {
-        $rows = $pdo->query('SELECT name, email, status, availability, gender, joined_date FROM volunteers ORDER BY name')->fetchAll();
-        $data = array_map(fn($r) => [$r['name'], $r['email'], $r['status'], $r['availability'], $r['gender'], $r['joined_date']], $rows);
-        export_csv('volunteer-report.csv', ['Name', 'Email', 'Status', 'Availability', 'Gender', 'Joined'], $data);
-    }
-    if ($tab === 'campaigns') {
-        $rows = $pdo->query('SELECT title, goal_amount, raised_amount, status, start_date, end_date FROM campaigns')->fetchAll();
-        $data = array_map(fn($r) => [$r['title'], $r['goal_amount'], $r['raised_amount'], $r['status'], $r['start_date'], $r['end_date']], $rows);
-        export_csv('campaign-report.csv', ['Title', 'Goal', 'Raised', 'Status', 'Start', 'End'], $data);
-    }
-    if ($tab === 'events') {
-        $rows = $pdo->query("
-            SELECT e.name, e.event_type, e.status, e.event_date,
-            (SELECT COUNT(*) FROM event_participants p WHERE p.event_id = e.id) AS participants
-            FROM events e ORDER BY e.event_date DESC
-        ")->fetchAll();
-        $data = array_map(fn($r) => [$r['name'], $r['event_type'], $r['status'], $r['event_date'], $r['participants']], $rows);
-        export_csv('event-report.csv', ['Name', 'Type', 'Status', 'Date', 'Participants'], $data);
-    }
-    if ($tab === 'beneficiaries') {
-        $rows = $pdo->query('SELECT name, aid_category, gender, created_at FROM beneficiaries')->fetchAll();
-        $data = array_map(fn($r) => [$r['name'], $r['aid_category'], $r['gender'], $r['created_at']], $rows);
-        export_csv('beneficiary-report.csv', ['Name', 'Aid Category', 'Gender', 'Added'], $data);
-    }
+    report_export_send_csv($pdo, $tab, $dateFrom, $dateTo);
 }
+
+$pageTitle = 'Reports';
+require_once dirname(__DIR__) . '/includes/header.php';
+require_once dirname(__DIR__) . '/includes/report_ui.php';
 
 // Report data (SQL written for strict MySQL / shared hosting ONLY_FULL_GROUP_BY)
 $reportLoadError = null;
@@ -165,6 +133,7 @@ $exportBaseQs = http_build_query(['tab' => $tab, 'date_from' => $dateFrom, 'date
 $dateRangeLabel = format_date($dateFrom) . ' – ' . format_date($dateTo);
 
 $reportsChartConfigs = [];
+$chartExportData = [];
 ?>
 
 <div class="reports-page animate-fade-in">
@@ -184,8 +153,8 @@ $reportsChartConfigs = [];
         </div>
         <div class="btn-group">
             <a href="?<?= e($exportQs) ?>" class="btn btn-light btn-export"><i class="fas fa-file-csv me-1"></i> CSV</a>
-            <a href="<?= base_url('reports/export.php?' . $exportBaseQs . '&format=pdf') ?>" class="btn btn-light btn-export"><i class="fas fa-file-pdf me-1"></i> PDF</a>
-            <a href="<?= base_url('reports/export.php?' . $exportBaseQs . '&format=docx') ?>" class="btn btn-light btn-export"><i class="fas fa-file-word me-1"></i> DOCX</a>
+            <a href="<?= base_url('reports/export.php?' . $exportBaseQs . '&format=pdf') ?>" class="btn btn-light btn-export js-report-export" data-format="pdf"><i class="fas fa-file-pdf me-1"></i> PDF</a>
+            <a href="<?= base_url('reports/export.php?' . $exportBaseQs . '&format=docx') ?>" class="btn btn-light btn-export js-report-export" data-format="docx"><i class="fas fa-file-word me-1"></i> DOCX</a>
         </div>
     </div>
 
@@ -227,26 +196,27 @@ $reportsChartConfigs = [];
     </ul>
 
     <?php if ($tab === 'donations'): ?>
-    <div class="row g-3 g-lg-4 mb-4">
-        <div class="col-lg-4">
-            <div class="report-hero-total">
+    <div class="row g-3 g-lg-4 mb-4" id="donation-kpis">
+        <div class="col-lg-4 d-flex">
+            <a href="#donation-breakdowns" class="report-hero-total report-card-clickable report-hero-link w-100">
                 <span class="report-hero-label">Total raised (period)</span>
                 <span class="report-hero-amount"><?= format_currency($donationTotal) ?></span>
                 <span class="report-hero-meta"><?= $donationCount ?> donation<?= $donationCount !== 1 ? 's' : '' ?> · Avg <?= format_currency($donationAvg) ?></span>
                 <i class="fas fa-hand-holding-heart report-hero-icon"></i>
-            </div>
+                <span class="report-card-hint"><i class="fas fa-arrow-down"></i></span>
+            </a>
         </div>
         <div class="col-lg-4">
-            <?php report_kpi('Transactions', (string) $donationCount, 'fa-receipt', 'blue'); ?>
+            <?php report_kpi('Transactions', (string) $donationCount, 'fa-receipt', 'blue', '#donation-breakdowns'); ?>
         </div>
         <div class="col-lg-4">
-            <?php report_kpi('Average gift', format_currency($donationAvg), 'fa-chart-line', 'purple'); ?>
+            <?php report_kpi('Average gift', format_currency($donationAvg), 'fa-chart-line', 'purple', '#donation-breakdowns'); ?>
         </div>
     </div>
 
-    <div class="row g-3 g-lg-4 mb-4">
+    <div class="row g-3 g-lg-4 mb-4" id="donation-charts">
         <div class="col-lg-7">
-            <div class="report-chart-panel">
+            <a href="#donation-breakdowns" class="report-chart-panel report-card-clickable">
                 <?php report_panel_title('Donation trend', 'By month in selected range', 'fa-chart-area'); ?>
                 <div class="report-chart-wrap">
                     <?php if (empty($donMonthly)): ?>
@@ -260,13 +230,20 @@ $reportsChartConfigs = [];
                         'labels' => array_column($donMonthly, 'label'),
                         'data' => array_map('floatval', array_column($donMonthly, 'total')),
                     ];
+                    $chartExportData[] = [
+                        'id' => 'donLineChart',
+                        'title' => 'Donation trend',
+                        'type' => 'line',
+                        'labels' => array_column($donMonthly, 'label'),
+                        'data' => array_map('floatval', array_column($donMonthly, 'total')),
+                    ];
                     ?>
                     <?php endif; ?>
                 </div>
-            </div>
+            </a>
         </div>
         <div class="col-lg-5">
-            <div class="report-chart-panel">
+            <a href="#donation-breakdowns" class="report-chart-panel report-card-clickable">
                 <?php report_panel_title('Payment methods', 'Share of total amount', 'fa-wallet'); ?>
                 <div class="report-chart-wrap">
                     <?php if (empty($donByPayment)): ?>
@@ -281,30 +258,37 @@ $reportsChartConfigs = [];
                         'data' => array_map('floatval', array_column($donByPayment, 'total')),
                         'cutout' => '62%',
                     ];
+                    $chartExportData[] = [
+                        'id' => 'donPieChart',
+                        'title' => 'Payment methods',
+                        'type' => 'doughnut',
+                        'labels' => array_column($donByPayment, 'payment_mode'),
+                        'data' => array_map('floatval', array_column($donByPayment, 'total')),
+                    ];
                     ?>
                     <?php endif; ?>
                 </div>
-            </div>
+            </a>
         </div>
     </div>
 
-    <div class="row g-3 g-lg-4">
+    <div class="row g-3 g-lg-4" id="donation-breakdowns">
         <div class="col-md-4"><?php report_breakdown_list('By donor type', $donByType, 'donor_type', 'total', 'currency', 'fa-user-tag'); ?></div>
         <div class="col-md-4"><?php report_breakdown_list('By campaign', $donByCampaign, 'title', 'total', 'currency', 'fa-bullhorn'); ?></div>
         <div class="col-md-4"><?php report_breakdown_list('By payment mode', $donByPayment, 'payment_mode', 'total', 'currency', 'fa-credit-card'); ?></div>
     </div>
 
     <?php elseif ($tab === 'volunteers'): ?>
-    <div class="row g-3 g-lg-4 mb-4">
-        <div class="col-6 col-lg-3"><?php report_kpi('Total volunteers', (string) $volTotal, 'fa-people-group', 'blue'); ?></div>
-        <div class="col-6 col-lg-3"><?php report_kpi('Active', (string) $volActive, 'fa-circle-check', 'green'); ?></div>
-        <div class="col-6 col-lg-3"><?php report_kpi('Inactive', (string) $volInactive, 'fa-user-slash', 'slate'); ?></div>
-        <div class="col-6 col-lg-3"><?php report_kpi('Pending', (string) $volPending, 'fa-clock', 'amber'); ?></div>
+    <div class="row g-3 g-lg-4 mb-4" id="volunteer-kpis">
+        <div class="col-6 col-lg-3"><?php report_kpi('Total volunteers', (string) $volTotal, 'fa-people-group', 'blue', '#volunteer-breakdowns'); ?></div>
+        <div class="col-6 col-lg-3"><?php report_kpi('Active', (string) $volActive, 'fa-circle-check', 'green', '#volunteer-breakdowns'); ?></div>
+        <div class="col-6 col-lg-3"><?php report_kpi('Inactive', (string) $volInactive, 'fa-user-slash', 'slate', '#volunteer-breakdowns'); ?></div>
+        <div class="col-6 col-lg-3"><?php report_kpi('Pending', (string) $volPending, 'fa-clock', 'amber', '#volunteer-breakdowns'); ?></div>
     </div>
 
-    <div class="row g-3 g-lg-4 mb-4">
+    <div class="row g-3 g-lg-4 mb-4" id="volunteer-charts">
         <div class="col-lg-6">
-            <div class="report-chart-panel">
+            <a href="#volunteer-breakdowns" class="report-chart-panel report-card-clickable">
                 <?php report_panel_title('By gender', 'Registered volunteers', 'fa-venus-mars'); ?>
                 <div class="report-chart-wrap">
                     <?php if (empty($volByGender)): ?>
@@ -318,13 +302,20 @@ $reportsChartConfigs = [];
                         'labels' => array_column($volByGender, 'gender'),
                         'data' => array_map('intval', array_column($volByGender, 'cnt')),
                     ];
+                    $chartExportData[] = [
+                        'id' => 'volGenderChart',
+                        'title' => 'Volunteers by gender',
+                        'type' => 'bar',
+                        'labels' => array_column($volByGender, 'gender'),
+                        'data' => array_map('intval', array_column($volByGender, 'cnt')),
+                    ];
                     ?>
                     <?php endif; ?>
                 </div>
-            </div>
+            </a>
         </div>
         <div class="col-lg-6">
-            <div class="report-chart-panel">
+            <a href="#volunteer-breakdowns" class="report-chart-panel report-card-clickable">
                 <?php report_panel_title('By availability', 'How volunteers can help', 'fa-calendar-check'); ?>
                 <div class="report-chart-wrap">
                     <?php if (empty($volByAvail)): ?>
@@ -339,14 +330,21 @@ $reportsChartConfigs = [];
                         'data' => array_map('intval', array_column($volByAvail, 'cnt')),
                         'cutout' => '58%',
                     ];
+                    $chartExportData[] = [
+                        'id' => 'volAvailChart',
+                        'title' => 'Volunteers by availability',
+                        'type' => 'doughnut',
+                        'labels' => array_column($volByAvail, 'availability'),
+                        'data' => array_map('intval', array_column($volByAvail, 'cnt')),
+                    ];
                     ?>
                     <?php endif; ?>
                 </div>
-            </div>
+            </a>
         </div>
     </div>
 
-    <div class="row g-3 g-lg-4">
+    <div class="row g-3 g-lg-4" id="volunteer-breakdowns">
         <div class="col-md-6">
             <?php
             $availRows = array_map(fn($r) => ['availability' => $r['availability'], 'total' => $r['cnt']], $volByAvail);
@@ -362,14 +360,14 @@ $reportsChartConfigs = [];
     </div>
 
     <?php elseif ($tab === 'campaigns'): ?>
-    <div class="row g-3 g-lg-4 mb-4">
-        <div class="col-6 col-lg-3"><?php report_kpi('Campaigns', (string) count($campaignRows), 'fa-bullhorn', 'green'); ?></div>
-        <div class="col-6 col-lg-3"><?php report_kpi('Active', (string) $campActive, 'fa-play', 'blue'); ?></div>
-        <div class="col-6 col-lg-3"><?php report_kpi('Total raised', format_currency((float) $campTotalRaised), 'fa-indian-rupee-sign', 'purple'); ?></div>
-        <div class="col-6 col-lg-3"><?php report_kpi('Combined goal', format_currency((float) $campTotalGoal), 'fa-flag', 'amber'); ?></div>
+    <div class="row g-3 g-lg-4 mb-4" id="campaign-kpis">
+        <div class="col-6 col-lg-3"><?php report_kpi('Campaigns', (string) count($campaignRows), 'fa-bullhorn', 'green', '#campaign-table'); ?></div>
+        <div class="col-6 col-lg-3"><?php report_kpi('Active', (string) $campActive, 'fa-play', 'blue', '#campaign-table'); ?></div>
+        <div class="col-6 col-lg-3"><?php report_kpi('Total raised', format_currency((float) $campTotalRaised), 'fa-indian-rupee-sign', 'purple', '#campaign-table'); ?></div>
+        <div class="col-6 col-lg-3"><?php report_kpi('Combined goal', format_currency((float) $campTotalGoal), 'fa-flag', 'amber', '#campaign-table'); ?></div>
     </div>
 
-    <div class="card card-shadow table-card">
+    <div class="card card-shadow table-card" id="campaign-table">
         <div class="report-table-head">
             <h5><i class="fas fa-chart-simple me-2 text-success"></i>Campaign performance</h5>
             <p class="text-muted small mb-0">Goal vs raised across all campaigns</p>
@@ -403,9 +401,9 @@ $reportsChartConfigs = [];
     </div>
 
     <?php elseif ($tab === 'events'): ?>
-    <div class="row g-3 g-lg-4 mb-4">
-        <div class="col-6 col-lg-4"><?php report_kpi('Total events', (string) $eventTotal, 'fa-calendar-days', 'pink'); ?></div>
-        <div class="col-6 col-lg-4"><?php report_kpi('Participants', (string) $eventParticipants, 'fa-users', 'blue'); ?></div>
+    <div class="row g-3 g-lg-4 mb-4" id="event-kpis">
+        <div class="col-6 col-lg-4"><?php report_kpi('Total events', (string) $eventTotal, 'fa-calendar-days', 'pink', '#event-table'); ?></div>
+        <div class="col-6 col-lg-4"><?php report_kpi('Participants', (string) $eventParticipants, 'fa-users', 'blue', '#event-table'); ?></div>
         <div class="col-lg-4">
             <div class="report-breakdown card-shadow h-100">
                 <?php report_panel_title('By event type', null, 'fa-tags'); ?>
@@ -420,7 +418,7 @@ $reportsChartConfigs = [];
         </div>
     </div>
 
-    <div class="card card-shadow table-card">
+    <div class="card card-shadow table-card" id="event-table">
         <div class="report-table-head">
             <h5><i class="fas fa-list me-2 text-success"></i>Event listing</h5>
         </div>
@@ -445,26 +443,27 @@ $reportsChartConfigs = [];
     </div>
 
     <?php else: /* beneficiaries */ ?>
-    <div class="row g-3 g-lg-4 mb-4">
-        <div class="col-lg-4">
-            <div class="report-hero-total">
+    <div class="row g-3 g-lg-4 mb-4" id="beneficiary-kpis">
+        <div class="col-lg-4 d-flex">
+            <a href="#beneficiary-breakdowns" class="report-hero-total report-card-clickable report-hero-link w-100">
                 <span class="report-hero-label">People aided</span>
                 <span class="report-hero-amount"><?= $benTotal ?></span>
                 <span class="report-hero-meta">Across all aid programs</span>
                 <i class="fas fa-user-injured report-hero-icon"></i>
-            </div>
+                <span class="report-card-hint"><i class="fas fa-arrow-down"></i></span>
+            </a>
         </div>
         <div class="col-lg-4">
-            <?php report_kpi('Aid categories', (string) count($benByAid), 'fa-layer-group', 'blue'); ?>
+            <?php report_kpi('Aid categories', (string) count($benByAid), 'fa-layer-group', 'blue', '#beneficiary-breakdowns'); ?>
         </div>
         <div class="col-lg-4">
-            <?php report_kpi('Linked campaigns', (string) count(array_filter($benByCampaign, fn($r) => $r['title'] !== 'Unlinked')), 'fa-link', 'purple'); ?>
+            <?php report_kpi('Linked campaigns', (string) count(array_filter($benByCampaign, fn($r) => $r['title'] !== 'Unlinked')), 'fa-link', 'purple', '#beneficiary-breakdowns'); ?>
         </div>
     </div>
 
-    <div class="row g-3 g-lg-4 mb-4">
+    <div class="row g-3 g-lg-4 mb-4" id="beneficiary-charts">
         <div class="col-lg-6">
-            <div class="report-chart-panel">
+            <a href="#beneficiary-breakdowns" class="report-chart-panel report-card-clickable">
                 <?php report_panel_title('Aid category', 'Distribution of support types', 'fa-hand-holding-heart'); ?>
                 <div class="report-chart-wrap">
                     <?php if (empty($benByAid)): ?>
@@ -479,13 +478,20 @@ $reportsChartConfigs = [];
                         'data' => array_map('intval', array_column($benByAid, 'cnt')),
                         'cutout' => '55%',
                     ];
+                    $chartExportData[] = [
+                        'id' => 'benAidChart',
+                        'title' => 'Aid category distribution',
+                        'type' => 'doughnut',
+                        'labels' => array_column($benByAid, 'aid_category'),
+                        'data' => array_map('intval', array_column($benByAid, 'cnt')),
+                    ];
                     ?>
                     <?php endif; ?>
                 </div>
-            </div>
+            </a>
         </div>
         <div class="col-lg-6">
-            <div class="report-chart-panel">
+            <a href="#beneficiary-breakdowns" class="report-chart-panel report-card-clickable">
                 <?php report_panel_title('By gender', 'Beneficiary demographics', 'fa-venus-mars'); ?>
                 <div class="report-chart-wrap">
                     <?php if (empty($benByGender)): ?>
@@ -499,14 +505,21 @@ $reportsChartConfigs = [];
                         'labels' => array_column($benByGender, 'gender'),
                         'data' => array_map('intval', array_column($benByGender, 'cnt')),
                     ];
+                    $chartExportData[] = [
+                        'id' => 'benGenderChart',
+                        'title' => 'Beneficiaries by gender',
+                        'type' => 'bar-horizontal',
+                        'labels' => array_column($benByGender, 'gender'),
+                        'data' => array_map('intval', array_column($benByGender, 'cnt')),
+                    ];
                     ?>
                     <?php endif; ?>
                 </div>
-            </div>
+            </a>
         </div>
     </div>
 
-    <div class="row g-3 g-lg-4">
+    <div class="row g-3 g-lg-4" id="beneficiary-breakdowns">
         <div class="col-md-4">
             <?php
             $aidRows = array_map(fn($r) => ['aid_category' => $r['aid_category'], 'total' => $r['cnt']], $benByAid);
@@ -532,9 +545,15 @@ $reportsChartConfigs = [];
 <?php
 if (!empty($reportsChartConfigs)) {
     $inlineJs = 'window.__reportsChartConfigs=' . json_for_script($reportsChartConfigs) . ';'
+        . 'window.__reportChartExportData=' . json_for_script($chartExportData) . ';'
         . 'window.__pageCharts=window.__pageCharts||[];'
-        . 'window.__pageCharts.push(function(){if(typeof initReportsCharts==="function")initReportsCharts();});';
+        . 'window.__pageCharts.push(function(){'
+        . 'if(typeof initReportsCharts==="function")initReportsCharts();'
+        . 'if(typeof initReportExports==="function")initReportExports();'
+        . '});';
 } else {
-    $inlineJs = '';
+    $inlineJs = 'window.__reportChartExportData=' . json_for_script($chartExportData) . ';'
+        . 'window.__pageCharts=window.__pageCharts||[];'
+        . 'window.__pageCharts.push(function(){if(typeof initReportExports==="function")initReportExports();});';
 }
 require_once dirname(__DIR__) . '/includes/footer.php';

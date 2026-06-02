@@ -273,6 +273,10 @@
       if (!canvas) {
         return;
       }
+      const wrap = canvas.closest('.report-chart-wrap');
+      if (wrap) {
+        wrap.style.minHeight = '220px';
+      }
       destroyChart(canvas);
 
       const labels = cfg.labels || [];
@@ -360,6 +364,86 @@
     });
   };
 
+  runWhenReady(function () {
+    document.querySelectorAll('.report-chart-panel.report-card-clickable[href]').forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        const href = el.getAttribute('href');
+        if (!href || href.charAt(0) !== '#') {
+          return;
+        }
+        const target = document.querySelector(href);
+        if (!target) {
+          return;
+        }
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  });
+
+  window.initReportExports = function () {
+    const exportBtns = document.querySelectorAll('.js-report-export');
+    if (!exportBtns.length) {
+      return;
+    }
+    if (window.__reportExportBound) {
+      return;
+    }
+    window.__reportExportBound = true;
+
+    function collectChartImages() {
+      const charts = window.__reportChartExportData || [];
+      const images = [];
+      charts.forEach(function (cfg) {
+        if (!cfg || !cfg.id) {
+          return;
+        }
+        const canvas = document.getElementById(cfg.id);
+        if (!canvas || typeof canvas.toDataURL !== 'function') {
+          return;
+        }
+        try {
+          images.push({
+            title: cfg.title || 'Chart',
+            image: canvas.toDataURL('image/png')
+          });
+        } catch (e) {
+          // ignore canvas export errors
+        }
+      });
+      return images;
+    }
+
+    exportBtns.forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        const url = new URL(btn.href, window.location.origin);
+        const form = document.createElement('form');
+        form.method = 'post';
+        form.action = url.pathname;
+        form.style.display = 'none';
+
+        url.searchParams.forEach(function (value, key) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = value;
+          form.appendChild(input);
+        });
+
+        const chartInput = document.createElement('input');
+        chartInput.type = 'hidden';
+        chartInput.name = 'chart_images';
+        chartInput.value = JSON.stringify(collectChartImages());
+        form.appendChild(chartInput);
+
+        document.body.appendChild(form);
+        form.submit();
+        form.remove();
+      });
+    });
+  };
+
   window.initDashboardCharts = function () {
     const d = window.__dashboardChartData;
     if (!d || typeof Chart === 'undefined') {
@@ -434,21 +518,26 @@
     }
   };
 
-  // Page charts (dashboard, reports) — run once
+  // Page charts (dashboard, reports) — re-run after full layout (fixes zero-height canvas)
   runWhenReady(function () {
-    if (typeof Chart === 'undefined' || !window.__pageCharts || !window.__pageCharts.length) {
+    if (typeof Chart === 'undefined') {
       return;
     }
-    if (window.__pageChartsRan) {
-      return;
-    }
-    window.__pageChartsRan = true;
-    window.__pageCharts.forEach(function (initFn) {
-      try {
-        initFn();
-      } catch (err) {
-        console.error('Chart init failed', err);
+    function runPageCharts() {
+      if (!window.__pageCharts || !window.__pageCharts.length) {
+        return;
       }
+      window.__pageCharts.forEach(function (initFn) {
+        try {
+          initFn();
+        } catch (err) {
+          console.error('Chart init failed', err);
+        }
+      });
+    }
+    runPageCharts();
+    window.addEventListener('load', function () {
+      setTimeout(runPageCharts, 100);
     });
   });
 
