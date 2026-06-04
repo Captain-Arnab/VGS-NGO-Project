@@ -40,6 +40,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         set_setting($pdo, 'cert_signatory_role', post_string('cert_signatory_role', 150));
         redirect('settings.php?tab=certificate', 'Certificate template saved.');
     }
+
+    if ($section === 'donation') {
+        set_setting($pdo, 'donation_bank_name', post_string('donation_bank_name', 150));
+        set_setting($pdo, 'donation_account_number', post_string('donation_account_number', 50));
+        set_setting($pdo, 'donation_ifsc', post_string('donation_ifsc', 20));
+        set_setting($pdo, 'donation_branch', post_string('donation_branch', 150));
+        redirect('settings.php?tab=donation', 'Donation bank details saved.');
+    }
 }
 
 if (!empty($errors)) {
@@ -55,6 +63,7 @@ $placeholdersHelp = '{recipient_name}, {recipient_role}, {participant_name}, {ev
 
 <ul class="nav nav-tabs nav-tabs-report mb-4">
     <li class="nav-item"><a class="nav-link<?= $tab === 'branding' ? ' active' : '' ?>" href="?tab=branding">Branding & logo</a></li>
+    <li class="nav-item"><a class="nav-link<?= $tab === 'donation' ? ' active' : '' ?>" href="?tab=donation">Donation / bank</a></li>
     <li class="nav-item"><a class="nav-link<?= $tab === 'certificate' ? ' active' : '' ?>" href="?tab=certificate">Certificate template</a></li>
 </ul>
 
@@ -63,7 +72,7 @@ $placeholdersHelp = '{recipient_name}, {recipient_role}, {participant_name}, {ev
     <div class="col-lg-5">
         <div class="card card-shadow p-4 text-center">
             <img src="<?= e(org_logo_url()) ?>" alt="Logo" class="settings-logo-preview mb-3" id="logoPreview">
-            <p class="small text-muted mb-0">Current logo (sidebar, login, invoices, certificates, PDF reports)</p>
+            <p class="small text-muted mb-0">Current logo — admin sidebar, login, invoices, certificates, and <strong>public website</strong> header/footer.</p>
         </div>
     </div>
     <div class="col-lg-7">
@@ -85,9 +94,44 @@ $placeholdersHelp = '{recipient_name}, {recipient_role}, {participant_name}, {ev
                 <div class="mb-3">
                     <label class="form-label">Upload new logo</label>
                     <input type="file" name="org_logo" class="form-control" accept="image/*" id="logoUpload">
-                    <small class="text-muted">JPG, PNG, or WebP. Recommended: square or portrait, min 200px width.</small>
+                    <small class="text-muted">JPG, PNG, or WebP. Recommended max height <strong>80–100 px</strong> for the website header (width auto). Default theme logo: <code>website/assets/img/logo.jpeg</code>.</small>
                 </div>
                 <button type="submit" class="btn btn-accent"><span class="btn-text">Save branding</span></button>
+            </form>
+        </div>
+    </div>
+</div>
+<?php elseif ($tab === 'donation'): ?>
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card card-shadow p-4">
+            <p class="text-muted">These details appear on the public <strong>Donate</strong> page. Leave blank to show placeholders until you add real bank information.</p>
+            <form method="post" class="js-prevent-double">
+                <input type="hidden" name="section" value="donation">
+                <div class="mb-3">
+                    <label class="form-label">Organization name (display)</label>
+                    <input type="text" class="form-control" value="<?= e(get_setting('org_name')) ?>" disabled>
+                    <small class="text-muted">Edit under Branding & logo.</small>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Bank name</label>
+                    <input type="text" name="donation_bank_name" class="form-control" value="<?= e(get_setting('donation_bank_name')) ?>" placeholder="e.g. State Bank of India">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Account number</label>
+                    <input type="text" name="donation_account_number" class="form-control" value="<?= e(get_setting('donation_account_number')) ?>">
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">IFSC code</label>
+                        <input type="text" name="donation_ifsc" class="form-control" value="<?= e(get_setting('donation_ifsc')) ?>">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Branch</label>
+                        <input type="text" name="donation_branch" class="form-control" value="<?= e(get_setting('donation_branch')) ?>">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-accent mt-4"><span class="btn-text">Save bank details</span></button>
             </form>
         </div>
     </div>

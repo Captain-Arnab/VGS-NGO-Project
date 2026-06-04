@@ -95,7 +95,26 @@ $v = $volunteer ?? ['status' => 'Pending', 'availability' => 'Part-time', 'joine
                 </select>
             </div>
             <div class="col-md-4"><label class="form-label">Joined Date</label><input type="text" name="joined_date" class="form-control flatpickr" value="<?= e($v['joined_date'] ?? '') ?>"></div>
-            <div class="col-12"><label class="form-label">Address</label><textarea name="address" class="form-control" rows="2"><?= e($v['address'] ?? '') ?></textarea></div>
+            <div class="col-12"><label class="form-label">Address / City</label><textarea name="address" class="form-control" rows="2"><?= e($v['address'] ?? $v['city'] ?? '') ?></textarea></div>
+            <?php
+            $volCols = array_column($pdo->query('SHOW COLUMNS FROM volunteers')->fetchAll(), 'Field');
+            if (in_array('area_of_interest', $volCols, true) && !empty($v['area_of_interest'])): ?>
+            <div class="col-12">
+                <div class="alert alert-light border small mb-0">
+                    <strong>Website registration</strong>
+                    <?php if (!empty($v['registration_source'])): ?> · Source: <?= e($v['registration_source']) ?><?php endif; ?>
+                    <ul class="mb-0 mt-2">
+                        <?php if (!empty($v['age'])): ?><li>Age: <?= e((string) $v['age']) ?></li><?php endif; ?>
+                        <?php if (!empty($v['area_of_interest'])): ?><li>Interest: <?= e($v['area_of_interest']) ?></li><?php endif; ?>
+                        <?php if (!empty($v['preferred_days'])): ?><li>Preferred days: <?= e($v['preferred_days']) ?></li><?php endif; ?>
+                        <?php if (!empty($v['preferred_time'])): ?><li>Preferred time: <?= e($v['preferred_time']) ?></li><?php endif; ?>
+                        <?php if (!empty($v['prior_experience'])): ?><li>Prior experience: <?= e($v['prior_experience']) ?></li><?php endif; ?>
+                        <?php if (!empty($v['motivation'])): ?><li>Why volunteer: <?= e($v['motivation']) ?></li><?php endif; ?>
+                        <?php if (!empty($v['additional_notes'])): ?><li>Notes: <?= e($v['additional_notes']) ?></li><?php endif; ?>
+                    </ul>
+                </div>
+            </div>
+            <?php endif; ?>
             <div class="col-12"><label class="form-label">Skills</label><textarea name="skills" class="form-control" rows="2"><?= e($v['skills'] ?? '') ?></textarea></div>
             <div class="col-md-6">
                 <label class="form-label">Availability</label>

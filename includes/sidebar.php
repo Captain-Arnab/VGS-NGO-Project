@@ -1,6 +1,6 @@
 <?php
 $isDashboard = basename(current_page()) === 'index.php'
-    && !preg_match('#/(donors|donations|volunteers|campaigns|events|beneficiaries|reports|documents|blogs|case_studies|media)/#', current_page());
+    && !preg_match('#/(donors|donations|volunteers|campaigns|events|beneficiaries|reports|documents|blogs|case_studies|media|banners|contact_queries)/#', current_page());
 ?>
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
@@ -36,6 +36,11 @@ $isDashboard = basename(current_page()) === 'index.php'
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link<?= nav_active('contact_queries') ?>" href="<?= base_url('contact_queries/index.php') ?>" data-title="Contact Queries">
+                    <i class="fas fa-envelope-open-text"></i><span>Contact Queries</span>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link<?= nav_active('beneficiaries') ?>" href="<?= base_url('beneficiaries/index.php') ?>" data-title="Beneficiaries">
                     <i class="fas fa-user-injured"></i><span>Beneficiaries</span>
                 </a>
@@ -58,6 +63,11 @@ $isDashboard = basename(current_page()) === 'index.php'
                 </a>
             </li>
             <li class="nav-section">Content</li>
+            <li class="nav-item">
+                <a class="nav-link<?= nav_active('banners') ?>" href="<?= base_url('banners/index.php') ?>" data-title="Homepage Banners">
+                    <i class="fas fa-panorama"></i><span>Homepage Banners</span>
+                </a>
+            </li>
             <li class="nav-item">
                 <a class="nav-link<?= nav_active('media') ?>" href="<?= base_url('media/index.php') ?>" data-title="Media Gallery">
                     <i class="fas fa-images"></i><span>Media Gallery</span>

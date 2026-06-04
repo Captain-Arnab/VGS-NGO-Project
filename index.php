@@ -9,7 +9,14 @@ $stats = [
     'campaigns' => (int) $pdo->query("SELECT COUNT(*) FROM campaigns WHERE status='Active'")->fetchColumn(),
     'events' => (int) $pdo->query("SELECT COUNT(*) FROM events WHERE status='Upcoming' AND event_date >= CURDATE()")->fetchColumn(),
     'beneficiaries' => (int) $pdo->query('SELECT COUNT(*) FROM beneficiaries')->fetchColumn(),
+    'contact_new' => 0,
 ];
+
+try {
+    $stats['contact_new'] = (int) $pdo->query("SELECT COUNT(*) FROM contact_queries WHERE status = 'New'")->fetchColumn();
+} catch (PDOException $e) {
+    // contact_queries table may not exist yet
+}
 
 $monthlyStmt = $pdo->query("
     SELECT DATE_FORMAT(MIN(donation_date), '%Y-%m') AS ym,
@@ -59,6 +66,13 @@ if (empty($chartLabels)) {
 <div class="page-header-row">
     <p class="text-muted mb-0">Welcome back, here's your impact at a glance.</p>
 </div>
+
+<?php if ($stats['contact_new'] > 0): ?>
+<div class="alert alert-warning d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+    <span><i class="fas fa-envelope-open-text me-2"></i><strong><?= $stats['contact_new'] ?></strong> new contact <?= $stats['contact_new'] === 1 ? 'query' : 'queries' ?> from the website.</span>
+    <a href="<?= base_url('contact_queries/index.php?status=New') ?>" class="btn btn-sm btn-dark">View queries</a>
+</div>
+<?php endif; ?>
 
 <div class="row g-3 g-xl-4 mb-4 dashboard-kpi-row">
     <?php
@@ -164,6 +178,7 @@ if (empty($chartLabels)) {
     <div class="col-md-6 col-lg-3"><a href="<?= base_url('donors/create.php') ?>" class="quick-action-btn"><i class="fas fa-plus-circle text-success"></i> Add Donor</a></div>
     <div class="col-md-6 col-lg-3"><a href="<?= base_url('donations/create.php') ?>" class="quick-action-btn"><i class="fas fa-plus-circle text-success"></i> Add Donation</a></div>
     <div class="col-md-6 col-lg-3"><a href="<?= base_url('volunteers/register.php') ?>" class="quick-action-btn"><i class="fas fa-plus-circle text-success"></i> Register Volunteer</a></div>
+    <div class="col-md-6 col-lg-3"><a href="<?= base_url('contact_queries/index.php') ?>" class="quick-action-btn"><i class="fas fa-envelope-open-text text-primary"></i> Contact Queries</a></div>
     <div class="col-md-6 col-lg-3"><a href="<?= base_url('campaigns/create.php') ?>" class="quick-action-btn"><i class="fas fa-plus-circle text-success"></i> Create Campaign</a></div>
 </div>
 

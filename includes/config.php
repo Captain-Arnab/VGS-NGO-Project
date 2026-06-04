@@ -57,6 +57,8 @@ if (!function_exists('detect_base_url')) {
             '/blogs',
             '/case_studies',
             '/media',
+            '/banners',
+            '/contact_queries',
         ];
         foreach ($strip as $suffix) {
             if (str_ends_with($dir, $suffix)) {

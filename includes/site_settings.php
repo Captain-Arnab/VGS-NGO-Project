@@ -46,6 +46,10 @@ function site_settings_defaults(): array
         'cert_footer' => 'We appreciate your valuable participation and contribution towards building a better Bharat.',
         'cert_signatory' => 'Authorized Signatory',
         'cert_signatory_role' => 'Bharati Foundation',
+        'donation_bank_name' => '',
+        'donation_account_number' => '',
+        'donation_ifsc' => '',
+        'donation_branch' => '',
     ];
 }
 
@@ -86,6 +90,10 @@ function org_logo_url(): string
         ? BASE_PATH . '/' . ltrim(str_replace('\\', '/', $path), '/')
         : UPLOAD_PATH . '/' . ltrim(str_replace('\\', '/', $path), '/');
     if (!is_readable($full)) {
+        $websiteLogo = dirname(BASE_PATH) . '/website/assets/img/logo.jpeg';
+        if (is_readable($websiteLogo)) {
+            return '../website/assets/img/logo.jpeg';
+        }
         return base_url('assets/logo/logo.jpeg');
     }
     return $isAssetPath ? base_url($path) : base_url('uploads/' . $path);
