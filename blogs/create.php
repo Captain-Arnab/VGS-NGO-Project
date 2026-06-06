@@ -117,6 +117,7 @@ $p = $post ?? ['status' => 'Draft', 'category' => 'News', 'published_at' => date
             <div class="col-md-6">
                 <label class="form-label">Featured Image</label>
                 <input type="file" name="featured_image" class="form-control file-upload-preview" accept="image/*">
+                <small class="text-muted d-block mt-1">Recommended size: <strong>480 × 320 px</strong>. Shown on the website blog list and post page. For YouTube/Facebook video, embed the link in the content editor below.</small>
                 <?php if (!empty($p['featured_image'])): ?>
                 <img src="<?= base_url('uploads/' . e($p['featured_image'])) ?>" class="thumb-sm mt-2" alt="">
                 <?php endif; ?>

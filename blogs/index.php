@@ -56,7 +56,9 @@ $fields = [
 ?>
 
 <div class="page-header-row">
-    <p class="text-muted mb-0">News, stories, and announcements.</p>
+    <div>
+        <p class="text-muted mb-0">News, stories, and announcements. Posts with status <strong>Published</strong> appear on the public website blog page.</p>
+    </div>
     <a href="<?= base_url('blogs/create.php') ?>" class="btn btn-accent"><i class="fas fa-plus me-1"></i> Add New Post</a>
 </div>
 
